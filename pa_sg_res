@@ -3,7 +3,7 @@
 #  pa_sg_res
 #    By Wuxian Shi, 13 Feb 2017
 #    adapted to keyword arguments by H. J. Bernstein
-#
+#    window args added by D. Kreitler
 
 tempfiles=( )
 cleanup() {
@@ -46,13 +46,18 @@ tempfiles+=( "/tmp/aimless$$.log" )
 
 if [ XX$1 == "XX--help" ]
   then
-  echo "pa_sg_res [-r<reslow>] [-R<reshigh>] [-S<spacegroup>] [-i<infile>] [-o<outfile>] [-l<logfile>]" >&2
-  echo "infile defaults to XDS_ASCII.HKL, oufile to aimless.mtz" >&2
+  echo "pa_sg_res [-1<first_frame>] [-f<frame_cutoff>] [-r<reslow>] [-R<reshigh>]
+        [-S<spacegroup>] [-i<infile>] [-o<outfile>] [-l<logfile>]" >&2
+  echo "infile defaults to XDS_ASCII.HKL, outfile to aimless.mtz" >&2
   exit -1
 fi
 
-while getopts ":r:R:S:h:o:l:" opt; do
+while getopts "1:f:r:R:S:h:o:l:" opt; do
   case $opt in
+    1) first_frame="$OPTARG"
+    ;;
+    f) frame_cutoff="$OPTARG"
+    ;;
     r) reslow="$OPTARG"
     ;;
     R) reshigh="$OPTARG"
@@ -66,7 +71,14 @@ while getopts ":r:R:S:h:o:l:" opt; do
     l) logfile="$OPTARG"
     ;;
     h)
-       echo "pa_sg_res [-r<reslow>] [-R<reshigh>] [-S<spacegroup>] [-i<infile>] [-o<outfile>] [-l<logfile>]" >&2
+       echo "pa_sg_res [-1<first_frame>]
+                       [-f<frame_cutoff>]
+                       [-r<reslow>]
+                       [-R<reshigh>]
+                       [-S<spacegroup>]
+                       [-i<infile>]
+                       [-o<outfile>]
+                       [-l<logfile>]" >&2
        echo "file defaults to XDS_ASCII.HKL" >&2
        exit -1
     ;;
@@ -110,6 +122,18 @@ elif [ "${reshigh}XX" == "XX" ]
     resolution_arg="resolution low $reslow"
 fi 
 
+frame_cutoff_arg="exclude batch $frame_cutoff TO 1000000"
+if [ "${frame_cutoff}XX" == "XX" ]
+  then
+    frame_cutoff_arg=${frame_cutoff}
+fi
+
+first_frame_arg="exclude batch 1 to $first_frame"
+if [ "${first_frame}XX" == "XX" ]
+  then
+    first_frame_arg=${first_frame}
+fi
+
 
 
 pointless xdsin $infile hklout /tmp/pa_sg_res_pointless$$.mtz << lla | tee /tmp/pointless$$.log
@@ -118,6 +142,8 @@ lla
 
 aimless hklin /tmp/pa_sg_res_pointless$$.mtz hklout $outfile << eof | tee /tmp/aimless$$.log
 $resolution_arg
+$frame_cutoff_arg
+$first_frame_arg
 onlymerge
 eof
 
