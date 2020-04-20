@@ -48,21 +48,21 @@ tempfiles+=( "/tmp/aimless$$.log" )
 
 if [ XX$1 == "XX--help" ]
   then
-  echo "pa_sg_res [-1<first_frame>] [-f<frame_cutoff>] [-r<reslow>] [-R<reshigh>]
+  echo "pa_sg_res [-1<first_frame>] [-N<frame_cutoff>] [-R<reslow>] [-r<reshigh>]
         [-S<spacegroup>] [-i<infile>] [-o<outfile>] [-l<logfile>]" >&2
   echo "infile defaults to XDS_ASCII.HKL, outfile to aimless.mtz" >&2
   exit -1
 fi
 
-while getopts "1:f:r:R:S:h:o:l:" opt; do
+while getopts "1:N:R:r:S:h:o:l:" opt; do
   case $opt in
     1) first_frame="$OPTARG"
     ;;
-    f) frame_cutoff="$OPTARG"
+    N) frame_cutoff="$OPTARG"
     ;;
-    r) reslow="$OPTARG"
+    R) reslow="$OPTARG"
     ;;
-    R) reshigh="$OPTARG"
+    r) reshigh="$OPTARG"
     ;;
     S) spacegroup="$OPTARG"
     ;;
@@ -74,9 +74,9 @@ while getopts "1:f:r:R:S:h:o:l:" opt; do
     ;;
     h)
        echo "pa_sg_res [-1<first_frame>]
-                       [-f<frame_cutoff>]
-                       [-r<reslow>]
-                       [-R<reshigh>]
+                       [-N<frame_cutoff>]
+                       [-R<reslow>]
+                       [-r<reshigh>]
                        [-S<spacegroup>]
                        [-i<infile>]
                        [-o<outfile>]
