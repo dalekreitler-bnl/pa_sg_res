@@ -11,7 +11,7 @@ tempfiles=( )
 cleanup() {
   if [ "${logfile}XX" == "XX" ]
     then
-      logfile=pa_sg_res.log
+      logfile=pa_sg_res_cut.log
   fi 
   echo "POINTLESS LOG:" >> $logfile
   echo "=======================================================================================" >> $logfile
@@ -48,9 +48,25 @@ tempfiles+=( "/tmp/aimless$$.log" )
 
 if [ XX$1 == "XX--help" ]
   then
-  echo "pa_sg_res_cut [-1<first_frame>] [-N<frame_cutoff>] [-R<reslow>] [-r<reshigh>]
-        [-S<spacegroup>] [-i<infile>] [-o<outfile>] [-l<logfile>]" >&2
-  echo "infile defaults to XDS_ASCII.HKL, outfile to aimless.mtz" >&2
+  echo "
+
+pa_sg_res_cut [-1<first_frame>] [-N<frame_cutoff>] [-R<reslow>] [-r<reshigh>]
+[-S<spacegroup>] [-i<infile>] [-o<outfile>] [-l<logfile>]
+
+pa_sg_res_cut is a bash shell script wrapper for aimless and pointless, for
+the downstream processing of fast_dp output. This script allows for trimming
+integrated reflection files (from XDS) based on resolution and frame number
+in addition to spacegroup assignment/enforcement.
+
+Caveat: The impact of crystal misalignment and/or unreliable indexing in the
+first few frames of data collection may still be present even if those frames
+are excluded from pointless/aimless. In such cases re-running fast_dp is
+recommended.
+
+Input arg variables match those of fast_dp (where overlap occurs)
+
+infile defaults to XDS_ASCII.HKL, outfile to aimless.mtz" >&2
+  
   exit -1
 fi
 
